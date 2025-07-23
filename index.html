@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Peta Johor Populasi</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<style>#map{height:90vh;width:100%}.info{position:absolute;top:10px;right:10px;background:white;padding:6px;border-radius:4px;box-shadow:0 0 15px rgba(0,0,0,0.2);}</style>
+</head><body>
+<div id="map"></div><div class="info" id="infoBox">Hover atas daerah untuk info</div>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+var popData = {
+  "Batu Pahat":503400,"Johor Bahru":1758500,"Kluang":328000,"Kota Tinggi":228900,
+  "Kulai":339600,"Mersing":80000,"Muar":318500,"Pontian":175500,
+  "Segamat":201500,"Tangkak":166900
+};
+var map=L.map('map').setView([2.5,103],8);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+
+function style(f){let p=popData[f.properties.DAERAH]||0;
+return{weight:1,color:'#555',fillColor:
+p>500000?'#800026':
+p>300000?'#BD0026':
+p>200000?'#E31A1C':
+p>100000?'#FC4E2A':'#FD8D3C',fillOpacity:0.7};}
+
+function highlight(e){e.target.setStyle({weight:3,color:'#666',fillOpacity:0.9}); info.update(e.target.feature.properties);}
+function reset(e){geojson.resetStyle(e.target); info.update();}
+
+function onFeature(feature, layer){
+  layer.on({mouseover:highlight,mouseout:reset});
+}
+
+var info=L.control({position:'topright'});
+info.onAdd=function(){this._div=document.getElementById('infoBox');return this._div;};
+info.update=function(p){this._div.innerHTML=p?<b>${p.DAERAH}</b><br>Pop: ${popData[p.DAERAH].toLocaleString()}:'Hover atas daerah untuk info';};
+info.addTo(map);
+
+var geojson=L.geoJson(null,{style:style,onEachFeature:onFeature}).addTo(map);
+fetch('https://raw.githubusercontent.com/upmjknj/Peta_Johor/main/johor-daerah.geojson')
+.then(r=>r.json()).then(d=>geojson.addData(d));
+</script></body></html>
