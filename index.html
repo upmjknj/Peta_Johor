@@ -39,6 +39,7 @@
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
+        // CORRECTED popData SYNTAX
         var popData = {
           "Parliament":"BATU PAHAT":503400,
           "Parliament":"JOHOR BAHRU":1758500,
@@ -52,7 +53,6 @@
           "Parliament":"TANGKAK":166900
         };
 
-        // --- NEW: FACILITIES DATA ---
         var facilitiesData = {
             "BATU PAHAT": [
                 "Batu Pahat Hospital",
@@ -101,8 +101,6 @@
             ]
             // Add more parliamentary areas and their facilities here
         };
-        // --- END NEW: FACILITIES DATA ---
-
 
         var map = L.map('map').setView([2.5, 103], 8);
 
@@ -119,7 +117,6 @@
             return this._div;
         };
 
-        // Corrected and enhanced info.update function
         info.update = function (props) {
             let content = 'Hover atas daerah untuk info';
             if (props && props.Parliament) {
@@ -145,9 +142,6 @@
 
         info.addTo(map);
 
-        // --- START OF GEOJSON INTEGRATION ---
-        // IMPORTANT: Replace this placeholder with your actual GeoJSON data.
-        // It should be a valid GeoJSON FeatureCollection or Feature object.
         var malaysiaGeoJson = {
             "type": "FeatureCollection",
             "features": [
