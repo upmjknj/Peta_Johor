@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title> Fasiliti Kesihatan Negeri Johor /title>
+    <title> Fasiliti Kesihatan Negeri Johor </title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
     <style>
         #map {
@@ -139,60 +139,6 @@
 
         info.addTo(map);
 
-        // Function to define style for GeoJSON polygons
-        function style(feature) {
-            return {
-                fillColor: '#800026', // Initial fill color
-                weight: 2,
-                opacity: 1,
-                color: 'white',
-                dashArray: '3',
-                fillOpacity: 0.7
-            };
-        }
-
-        // Function to handle feature events (e.g., hover)
-        function onEachFeature(feature, layer) {
-            layer.on({
-                mouseover: function(e) {
-                    var layer = e.target;
-                    layer.setStyle({
-                        weight: 5,
-                        color: '#666',
-                        dashArray: '',
-                        fillOpacity: 0.9
-                    });
-                    info.update(layer.feature.properties);
-                },
-                mouseout: function(e) {
-                    geojson.resetStyle(e.target);
-                    info.update(); // Clear info box on mouse out
-                },
-                click: function(e) {
-                    map.fitBounds(e.target.getBounds());
-                }
-            });
-
-            // Bind popup with detailed information
-            if (feature.properties && feature.properties.Parliament) {
-                var parliamentName = feature.properties.Parliament;
-                var population = popData[parliamentName] ? popData[parliamentName].toLocaleString() : 'N/A';
-                var facilities = facilitiesData[parliamentName];
-                let popupContent = `<b>${parliamentName}</b><br>Pop: ${population}`;
-
-                if (facilities && facilities.length > 0) {
-                    popupContent += '<br><b>Facilities:</b><ul>';
-                    facilities.forEach(facility => {
-                        popupContent += `<li>${facility}</li>`;
-                    });
-                    popupContent += '</ul>';
-                } else {
-                    popupContent += '<br>No facilities listed.';
-                }
-                layer.bindPopup(popupContent);
-            }
-        }
-
         var malaysiaGeoJson = {
             "type": "FeatureCollection",
             "features": [
@@ -297,7 +243,7 @@
         }
 
         // Add GeoJSON layer to map
-        var geojson;
+        // Ensure malaysiaGeoJson is not empty before adding
         if (malaysiaGeoJson && malaysiaGeoJson.features && malaysiaGeoJson.features.length > 0) {
             geojson = L.geoJSON(malaysiaGeoJson, {
                 style: style,
@@ -306,6 +252,8 @@
         } else {
             console.warn("No GeoJSON data found or GeoJSON is empty. Please replace 'malaysiaGeoJson' with your actual data.");
         }
+        // --- END OF GEOJSON INTEGRATION ---
+
     </script>
 </body>
 </html>
