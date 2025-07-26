@@ -43,7 +43,6 @@
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
-        // CORRECTED popData SYNTAX
         var popData = {
           "BATU PAHAT":510400,
           "JOHOR BAHRU":1800000,
@@ -57,57 +56,57 @@
           "TANGKAK":169500
         };
 
-        // --- MODIFIED facilitiesData STRUCTURE for selective linking ---
-        var pointFacilitiesData = {
+        // This data structure is for facilities listed within the district's popup/info box
+        // It's keyed by parliamentary area name
+        var facilitiesData = {
             "BATU PAHAT": [
-                "Batu Pahat Hospital",
-
+                { name: "Batu Pahat Hospital", url: "pages/batu_pahat_hospital.html" },
+                // Add other facilities for Batu Pahat here
             ],
             "JOHOR BAHRU": [
-
-                { name: "Sultanah Aminah Hospital", lat: 1.4589, lng: 103.7570, url: "pages/sultanah_aminah_hospital.html", description: "Major hospital in Johor Bahru." },
+                { name: "Sultanah Aminah Hospital", url: "pages/sultanah_aminah_hospital.html" },
                 { name: "<b>Jumlah Hospital : 1</b>"},
                 { name: "<b>Jumlah PKD : 1</b>"},
                 { name: "<b>Jumlah KK : 18</b>" },
                 { name: "<b>Jumlah KKOM : 15</b>" },
                 { name: "<b>Jumlah KD : 19</b>" },
-                { name: "<u>Senarai Lengkap</u>", url: "Senarai Fasiliti Daerah JB.html" }, //LINK
-
+                { name: "<u>Senarai Lengkap</u>", url: "Senarai Fasiliti Daerah JB.html" },
             ],
             "KLUANG": [
-                "Kluang Hospital",
-
+                { name: "Kluang Hospital", url: "pages/kluang_hospital.html" },
             ],
             "KOTA TINGGI": [
-                "Kota Tinggi Hospital",
-
+                { name: "Kota Tinggi Hospital", url: "pages/kota_tinggi_hospital.html" },
             ],
             "KULAI": [
-                "Kulai Hospital",
-     
+                { name: "Kulai Hospital", url: "pages/kulai_hospital.html" },
             ],
             "MERSING": [
-                "Mersing JHospital",
-                
+                { name: "Mersing Hospital", url: "pages/mersing_hospital.html" }, // Corrected name "JHospital" to "Hospital"
             ],
             "MUAR": [
-                "Muar Hospital",
-
+                { name: "Muar Hospital", url: "pages/muar_hospital.html" },
             ],
             "PONTIAN": [
-                "Tanjung Hospital",
-             
+                { name: "Pontian Hospital", url: "pages/pontian_hospital.html" }, // Corrected name "Tanjung Hospital" to "Pontian Hospital"
             ],
             "SEGAMAT": [
-                "Segamat Hospital",
-                
+                { name: "Segamat Hospital", url: "pages/segamat_hospital.html" },
             ],
             "TANGKAK": [
-                "Tangkak Hospital",
-                
+                { name: "Tangkak Hospital", url: "pages/tangkak_hospital.html" },
             ]
             // Add more parliamentary areas and their facilities here
         };
+
+        // This new data structure is for individual facilities you want to mark on the map
+        // Each object must have lat and lng
+        var allMarkersData = [
+            { name: "Sultanah Aminah Hospital", lat: 1.4589, lng: 103.7570, url: "pages/sultanah_aminah_hospital.html", description: "Major hospital in Johor Bahru." },
+            // Add other facilities you want to plot as individual markers here
+            // Example: { name: "Another Hospital", lat: 1.2345, lng: 103.4567, description: "Some description" },
+        ];
+
 
         var map = L.map('map').setView([2.5, 103], 8);
 
@@ -129,6 +128,7 @@
             if (props && props.Parliament) {
                 const parliamentName = props.Parliament;
                 const population = popData[parliamentName] ? popData[parliamentName].toLocaleString() : 'N/A';
+                // *** CORRECTED: Use facilitiesData here ***
                 const facilities = facilitiesData[parliamentName];
 
                 content = `<b>${parliamentName}</b><br>Pop: ${population}`;
@@ -189,33 +189,18 @@
                 }
             });
 
-                // Loop through the point facilities data and add markers to the map
-        pointFacilitiesData.forEach(function(facility) {
-        var marker = L.marker([facility.lat, facility.lng]).addTo(map);
-
-        // Create popup content for the marker
-        let popupContent = `<b>${facility.name}</b><br>`;
-        if (facility.description) {
-            popupContent += `${facility.description}<br>`;
-        }
-        if (facility.url) {
-            popupContent += `<a href="${facility.url}">More Info</a>`;
-        }
-
-        marker.bindPopup(popupContent);
-    });
-
-            // Bind popup with detailed information
+            // Bind popup with detailed information for the parliamentary area
             if (feature.properties && feature.properties.Parliament) {
                 var parliamentName = feature.properties.Parliament;
                 var population = popData[parliamentName] ? popData[parliamentName].toLocaleString() : 'N/A';
+                // *** CORRECTED: Use facilitiesData here ***
                 var facilities = facilitiesData[parliamentName];
                 let popupContent = `<b>${parliamentName}</b><br>Pop: ${population}`;
 
                 if (facilities && facilities.length > 0) {
                     popupContent += '<br><b>Facilities:</b><ul>';
                     facilities.forEach(facility => {
-                        // --- MODIFIED: Conditionally create anchor tag based on 'url' property ---
+                        // Conditionally create anchor tag based on 'url' property
                         if (facility.url) {
                             popupContent += `<li><a href="${facility.url}">${facility.name}</a></li>`;
                         } else {
@@ -224,11 +209,29 @@
                     });
                     popupContent += '</ul>';
                 } else {
-                    popupContent += '<br>No facilities listed.';
+                    content += '<div class="facility-list">No facilities listed.</div>';
                 }
                 layer.bindPopup(popupContent);
             }
         }
+
+        // *** NEW: Loop through the allMarkersData and add markers to the map ONCE ***
+        // This loop should be outside onEachFeature
+        allMarkersData.forEach(function(facility) {
+            var marker = L.marker([facility.lat, facility.lng]).addTo(map);
+
+            // Create popup content for the marker
+            let popupContent = `<b>${facility.name}</b><br>`;
+            if (facility.description) {
+                popupContent += `${facility.description}<br>`;
+            }
+            if (facility.url) {
+                popupContent += `<a href="${facility.url}">More Info</a>`;
+            }
+
+            marker.bindPopup(popupContent);
+        });
+
 
         var malaysiaGeoJson = {
             "type": "FeatureCollection",
@@ -263,7 +266,7 @@
         };
 
         // Add GeoJSON layer to map
-        var geojson;
+        // Ensure malaysiaGeoJson is not empty before adding
         if (malaysiaGeoJson && malaysiaGeoJson.features && malaysiaGeoJson.features.length > 0) {
             geojson = L.geoJSON(malaysiaGeoJson, {
                 style: style,
@@ -272,6 +275,8 @@
         } else {
             console.warn("No GeoJSON data found or GeoJSON is empty. Please replace 'malaysiaGeoJson' with your actual data.");
         }
+        // --- END OF GEOJSON INTEGRATION ---
+
     </script>
 </body>
 </html>
