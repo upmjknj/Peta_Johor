@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title> Fasiliti kesihatan Negeri Johor </title>
+    <title>Fasiliti Kesihatan Negeri Johor</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
     <style>
         #map {
@@ -21,7 +21,7 @@
         }
         .facility-list {
             margin-top: 5px;
-            font-size: 1.5em;
+            font-size: 0.9em;
         }
         .facility-list ul {
             list-style-type: disc;
@@ -30,6 +30,10 @@
         }
         .facility-list li {
             margin-bottom: 2px;
+        }
+        /* New style for popup content font size */
+        .leaflet-popup-content-wrapper .leaflet-popup-content {
+            font-size: 1.1em; /* Adjust this value as needed (e.g., 16px, 1.2em) */
         }
     </style>
 </head>
@@ -53,6 +57,7 @@
           "TANGKAK":166900
         };
 
+        // --- MODIFIED facilitiesData STRUCTURE for selective linking ---
         var facilitiesData = {
             "BATU PAHAT": [
                 "Batu Pahat Hospital",
@@ -144,7 +149,7 @@
         // Function to define initial style for GeoJSON polygons
         function style(feature) {
             return {
-                fillColor: '#6666', // Initial fill color (grey)
+                fillColor: '#800026', // Initial fill color (dark red)
                 weight: 2,
                 opacity: 1,
                 color: 'white',
