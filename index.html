@@ -399,14 +399,14 @@ var defaultIcon = L.divIcon({
         // --- END OF GEOJSON INTEGRATION ---
         
         // --- ADDED: Legend Control ---
-        var legend = L.control({position: 'bottomright'});
+       var legend = L.control({position: 'bottomright'});
 
         legend.onAdd = function (map) {
             var div = L.DomUtil.create('div', 'info legend');
             var categories = [
-                { name: 'Hospital', color: '#e41a1c' }, // Matches hospital-marker background-color
-                { name: 'Clinic', color: '#377eb8' },   // Matches clinic-marker background-color
-                { name: 'Other Facility', color: '#4daf4a' } // Matches default-marker background-color
+                { name: 'Hospital', color: '#e41a1c' }, // Matches hospital-marker background
+                { name: 'Clinic', color: '#377eb8' },   // Matches clinic-marker background
+                { name: 'Other Facility', color: '#4daf4a' } // Matches default-marker background
             ];
 
             // Loop through categories and add a colored square and label
@@ -419,6 +419,8 @@ var defaultIcon = L.divIcon({
         };
 
         legend.addTo(map);
+        // --- END ADDED Legend Control ---
+
         // --- END ADDED Legend Control ---
         
     </script>
