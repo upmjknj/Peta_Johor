@@ -58,12 +58,14 @@
         };
 
         // --- MODIFIED facilitiesData STRUCTURE for selective linking ---
-        var facilitiesData = {
+        var pointFacilitiesData = {
             "BATU PAHAT": [
                 "Batu Pahat Hospital",
 
             ],
             "JOHOR BAHRU": [
+
+                { name: "Sultanah Aminah Hospital", lat: 1.4589, lng: 103.7570, url: "pages/sultanah_aminah_hospital.html", description: "Major hospital in Johor Bahru." },
                 { name: "<b>Jumlah Hospital : 1</b>"},
                 { name: "<b>Jumlah PKD : 1</b>"},
                 { name: "<b>Jumlah KK : 18</b>" },
@@ -186,6 +188,22 @@
                     map.fitBounds(e.target.getBounds());
                 }
             });
+
+                // Loop through the point facilities data and add markers to the map
+        pointFacilitiesData.forEach(function(facility) {
+        var marker = L.marker([facility.lat, facility.lng]).addTo(map);
+
+        // Create popup content for the marker
+        let popupContent = `<b>${facility.name}</b><br>`;
+        if (facility.description) {
+            popupContent += `${facility.description}<br>`;
+        }
+        if (facility.url) {
+            popupContent += `<a href="${facility.url}">More Info</a>`;
+        }
+
+        marker.bindPopup(popupContent);
+    });
 
             // Bind popup with detailed information
             if (feature.properties && feature.properties.Parliament) {
