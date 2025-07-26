@@ -35,6 +35,53 @@
         .leaflet-popup-content-wrapper .leaflet-popup-content {
             font-size: 1.1em; /* Adjust this value as needed (e.g., 16px, 1.2em) */
         }
+
+                /* --- ADDED: Custom marker styles for different categories --- */
+        .hospital-marker {
+            background-color: #e41a1c; /* Red color for hospitals */
+            border-radius: 50%; /* Make it a circle */
+            width: 15px;
+            height: 15px;
+            border: 2px solid white;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        .clinic-marker {
+            background-color: #377eb8; /* Blue color for clinics */
+            border-radius: 50%; /* Make it a circle */
+            width: 15px;
+            height: 15px;
+            border: 2px solid white;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        /* Default marker style if needed */
+        .default-marker {
+            background-color: #4daf4a; /* Green color for default */
+            border-radius: 50%;
+            width: 15px;
+            height: 15px;
+            border: 2px solid white;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        /* --- END ADDED CSS --- */
+           /* --- ADDED: Legend specific CSS --- */
+        .legend {
+            line-height: 18px;
+            color: #555;
+            background-color: white;
+            padding: 6px 8px;
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+        .legend i {
+            width: 18px;
+            height: 18px;
+            float: left;
+            margin-right: 8px;
+            opacity: 0.7;
+            border-radius: 50%; /* Match marker shape */
+            border: 1px solid #ccc; /* Optional: add a light border for contrast */
+        }
+        /* --- END ADDED CSS --- */     
     </style>
 </head>
 <body>
@@ -100,13 +147,67 @@
 
         // This new data structure is for individual facilities you want to mark on the map
         // Each object must have lat and lng
+        // --- MODIFIED: allMarkersData with 'category' property added to each object ---
         var allMarkersData = [
-            { name: "Sultanah Aminah Hospital", lat: 1.4593303508060065, lng: 103.74438934039425, url: "pages/sultanah_aminah_hospital.html", description: "Major hospital in Johor Bahru." },
-            // Add other facilities you want to plot as individual markers here
-            // Example: { name: "Another Hospital", lat: 1.2345, lng: 103.4567, description: "Some description" },
-        ]; 
+            {
+                name: "Sultanah Aminah Hospital",
+                lat: 1.4593303508060065,
+                lng: 103.74438934039425,
+                url: "pages/sultanah_aminah_hospital.html",
+                description: "Major public hospital in Johor Bahru.",
+                category: "Hospital" // Added category
+            },
+            {
+                name: "Klinik Kesihatan Larkin",
+                lat: 1.4969741622768677, // Example coordinates for a clinic
+                lng: 103.74894093420767, 
+                url: "pages/kk_larkin.html",
+                description: "Public health clinic in Larkin.",
+                category: "Clinic" // Added category
+            },
+            {
+                name: "Hospital Permai",
+                lat: 1.5237254480284828,
+                lng: 103.70468321552346,
+                url: "pages/hospital_permai.html",
+                description: "Psychiatric hospital in Johor Bahru.",
+                category: "Hospital"
+            },
+            {
+                name: "Klinik Desa Kempas",
+                lat: 1.5327818222951763, 
+                lng: 103.71478819997843,
+                url: "pages/kd_kempas.html",
+                description: "Rural health clinic in Kempas.",
+                category: "Clinic"
+            }
+            // Add more facilities with their respective categories and coordinates
+        ];
+        // --- END MODIFIED allMarkersData ---
 
+        // --- ADDED: Define custom Leaflet DivIcons for each category ---
+        var hospitalIcon = L.divIcon({
+            className: 'hospital-marker', // CSS class for styling
+            iconSize: [15, 15], // Size of the icon
+            iconAnchor: [7.5, 7.5], // Center the icon
+            popupAnchor: [0, -7.5] // Position popup above the center
+        });
 
+        var clinicIcon = L.divIcon({
+            className: 'clinic-marker', // CSS class for styling
+            iconSize: [15, 15],
+            iconAnchor: [7.5, 7.5],
+            popupAnchor: [0, -7.5]
+        });
+
+        var defaultIcon = L.divIcon({
+            className: 'default-marker', // Fallback CSS class
+            iconSize: [15, 15],
+            iconAnchor: [7.5, 7.5],
+            popupAnchor: [0, -7.5]
+        });
+        // --- END ADDED DivIcons ---
+        
         var map = L.map('map').setView([2.5, 103], 8);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -216,20 +317,38 @@
 
         // *** NEW: Loop through the allMarkersData and add markers to the map ONCE ***
         // This loop should be outside onEachFeature
+        // --- MODIFIED: Loop through allMarkersData and add markers with category-specific icons ---
         allMarkersData.forEach(function(facility) {
-            var marker = L.marker([facility.lat, facility.lng]).addTo(map);
+            let currentIcon;
+            switch (facility.category) {
+                case "Hospital":
+                    currentIcon = hospitalIcon;
+                    break;
+                case "Clinic":
+                    currentIcon = clinicIcon;
+                    break;
+                default:
+                    currentIcon = defaultIcon; // Fallback for uncategorized facilities
+            }
+
+            var marker = L.marker([facility.lat, facility.lng], { icon: currentIcon }).addTo(map);
 
             // Create popup content for the marker
-            let popupContent = `<b>${facility.name}</b><br>`;
+            let markerPopupContent = `<b>${facility.name}</b><br>`;
             if (facility.description) {
-                popupContent += `${facility.description}<br>`;
+                markerPopupContent += `${facility.description}<br>`;
             }
             if (facility.url) {
-                popupContent += `<a href="${facility.url}">More Info</a>`;
+                markerPopupContent += `<a href="${facility.url}">More Info</a>`;
+            }
+            if (facility.category) { // Display category in popup
+                markerPopupContent += `<br>Category: ${facility.category}`;
             }
 
-            marker.bindPopup(popupContent);
+            marker.bindPopup(markerPopupContent);
         });
+        // --- END MODIFIED marker loop ---
+
 
 
         var malaysiaGeoJson = {
@@ -275,7 +394,30 @@
             console.warn("No GeoJSON data found or GeoJSON is empty. Please replace 'malaysiaGeoJson' with your actual data.");
         }
         // --- END OF GEOJSON INTEGRATION ---
+        
+        // --- ADDED: Legend Control ---
+        var legend = L.control({position: 'bottomright'});
 
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'info legend');
+            var categories = [
+                { name: 'Hospital', color: '#e41a1c' }, // Matches hospital-marker background-color
+                { name: 'Clinic', color: '#377eb8' },   // Matches clinic-marker background-color
+                { name: 'Other Facility', color: '#4daf4a' } // Matches default-marker background-color
+            ];
+
+            // Loop through categories and add a colored square and label
+            for (var i = 0; i < categories.length; i++) {
+                div.innerHTML +=
+                    '<i style="background:' + categories[i].color + '"></i> ' +
+                    categories[i].name + '<br>';
+            }
+            return div;
+        };
+
+        legend.addTo(map);
+        // --- END ADDED Legend Control ---
+        
     </script>
 </body>
 </html>
