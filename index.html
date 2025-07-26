@@ -183,23 +183,34 @@
             };
         }
 
-        // Function to highlight feature on mouseover
-        function highlightFeature(e) {
-            var layer = e.target;
+    
+        // Function to handle feature events (e.g., hover)
+        function onEachFeature(feature, layer) {
+            layer.on({
+                mouseover: function(e) {
+                    var layer = e.target;
+                    layer.setStyle({
+                        fillColor: '#fd8d3c', // New fill color on hover (orange)
+                        weight: 4, // Thicker border on hover
+                        color: '#666',
+                        dashArray: '',
+                        fillOpacity: 0.9
+                    });
 
-            layer.setStyle({
-                weight: 5,
-                color: '#1347d6',
-                dashArray: '',
-                fillOpacity: 0.7
+                    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                        layer.bringToFront();
+                    }
+                    info.update(layer.feature.properties);
+                },
+                mouseout: function(e) {
+                    geojson.resetStyle(e.target);
+                    info.update(); // Clear info box on mouse out
+                },
+                click: function(e) {
+                    map.fitBounds(e.target.getBounds());
+                }
             });
 
-            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                layer.bringToFront();
-            }
-
-            info.update(layer.feature.properties);
-        }
 
         // Function to reset highlight on mouseout
         var geojson; // Declare geojson variable in a broader scope
