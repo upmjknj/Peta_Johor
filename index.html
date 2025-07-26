@@ -190,8 +190,12 @@
                 if (facilities && facilities.length > 0) {
                     popupContent += '<br><b>Facilities:</b><ul>';
                     facilities.forEach(facility => {
-                        // --- MODIFIED: Create anchor tag for each facility ---
-                        popupContent += `<li><a href="${facility.url}">${facility.name}</a></li>`;
+                        // --- MODIFIED: Conditionally create anchor tag based on 'url' property ---
+                        if (facility.url) {
+                            popupContent += `<li><a href="${facility.url}">${facility.name}</a></li>`;
+                        } else {
+                            popupContent += `<li>${facility.name}</li>`;
+                        }
                     });
                     popupContent += '</ul>';
                 } else {
