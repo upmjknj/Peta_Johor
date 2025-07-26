@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title> Fasiliti Kesihatan Negeri Johor </title>
+    <title>Fasiliti Kesihatan Negeri Johor</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
     <style>
         #map {
@@ -31,6 +31,10 @@
         .facility-list li {
             margin-bottom: 2px;
         }
+        /* New style for popup content font size */
+        .leaflet-popup-content-wrapper .leaflet-popup-content {
+            font-size: 1.1em; /* Adjust this value as needed (e.g., 16px, 1.2em) */
+        }
     </style>
 </head>
 <body>
@@ -53,16 +57,18 @@
           "TANGKAK":166900
         };
 
+        // --- MODIFIED facilitiesData STRUCTURE for selective linking ---
         var facilitiesData = {
             "BATU PAHAT": [
                 "Batu Pahat Hospital",
-            
+
             ],
             "JOHOR BAHRU": [
-                "Sultanah Aminah Hospital",
-                "Hospital Sultan Ismail",
-                "Hospital Pasir Gudang",
-                "Klinik Kesihatan Sultan Ismail"
+                { name: "<u>HOSPITAL</u>" },
+                { name: "Hospital Sultanah Aminah"},
+                { name: "Klinik" },
+                { name: "<u>Senarai Lengkap</u>", url: "https://jknjohor.moh.gov.my/hsajb/" }, //LINK
+
             ],
             "KLUANG": [
                 "Kluang Hospital",
@@ -74,27 +80,27 @@
             ],
             "KULAI": [
                 "Kulai Hospital",
-
+     
             ],
             "MERSING": [
-                "Mersing Hospital",
-
+                "Mersing JHospital",
+                
             ],
             "MUAR": [
                 "Muar Hospital",
 
             ],
             "PONTIAN": [
-                "Pontian Hospital",
-
+                "Tanjung Hospital",
+             
             ],
             "SEGAMAT": [
                 "Segamat Hospital",
-
+                
             ],
             "TANGKAK": [
                 "Tangkak Hospital",
-    
+                
             ]
             // Add more parliamentary areas and their facilities here
         };
@@ -126,7 +132,8 @@
                 if (facilities && facilities.length > 0) {
                     let facilitiesHtml = '<div class="facility-list"><b>Facilities:</b><ul>';
                     facilities.forEach(facility => {
-                        facilitiesHtml += `<li>${facility}</li>`;
+                        // For the info box, we just display the name for now (no links)
+                        facilitiesHtml += `<li>${facility.name}</li>`;
                     });
                     facilitiesHtml += '</ul></div>';
                     content += facilitiesHtml;
@@ -138,6 +145,70 @@
         };
 
         info.addTo(map);
+
+        // Function to define initial style for GeoJSON polygons
+        function style(feature) {
+            return {
+                fillColor: '#800026', // Initial fill color (dark red)
+                weight: 2,
+                opacity: 1,
+                color: 'white',
+                dashArray: '3',
+                fillOpacity: 0.7
+            };
+        }
+
+        // Function to handle feature events (e.g., hover)
+        function onEachFeature(feature, layer) {
+            layer.on({
+                mouseover: function(e) {
+                    var layer = e.target;
+                    layer.setStyle({
+                        fillColor: '#fd8d3c', // New fill color on hover (orange)
+                        weight: 4, // Thicker border on hover
+                        color: '#666',
+                        dashArray: '',
+                        fillOpacity: 0.9
+                    });
+
+                    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                        layer.bringToFront();
+                    }
+                    info.update(layer.feature.properties);
+                },
+                mouseout: function(e) {
+                    geojson.resetStyle(e.target);
+                    info.update(); // Clear info box on mouse out
+                },
+                click: function(e) {
+                    map.fitBounds(e.target.getBounds());
+                }
+            });
+
+            // Bind popup with detailed information
+            if (feature.properties && feature.properties.Parliament) {
+                var parliamentName = feature.properties.Parliament;
+                var population = popData[parliamentName] ? popData[parliamentName].toLocaleString() : 'N/A';
+                var facilities = facilitiesData[parliamentName];
+                let popupContent = `<b>${parliamentName}</b><br>Pop: ${population}`;
+
+                if (facilities && facilities.length > 0) {
+                    popupContent += '<br><b>Facilities:</b><ul>';
+                    facilities.forEach(facility => {
+                        // --- MODIFIED: Conditionally create anchor tag based on 'url' property ---
+                        if (facility.url) {
+                            popupContent += `<li><a href="${facility.url}">${facility.name}</a></li>`;
+                        } else {
+                            popupContent += `<li>${facility.name}</li>`;
+                        }
+                    });
+                    popupContent += '</ul>';
+                } else {
+                    popupContent += '<br>No facilities listed.';
+                }
+                layer.bindPopup(popupContent);
+            }
+        }
 
         var malaysiaGeoJson = {
             "type": "FeatureCollection",
@@ -171,79 +242,8 @@
 ]
         };
 
-        // Function to style GeoJSON features
-        function style(feature) {
-            return {
-                fillColor: 'lightgray', // Default fill color
-                weight: 2,
-                opacity: 1,
-                color: 'white',
-                dashArray: '3',
-                fillOpacity: 0.7
-            };
-        }
-
-        // Function to highlight feature on mouseover
-        function highlightFeature(e) {
-            var layer = e.target;
-
-            layer.setStyle({
-                weight: 5,
-                color: '#666',
-                dashArray: '',
-                fillOpacity: 0.7
-            });
-
-            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                layer.bringToFront();
-            }
-
-            info.update(layer.feature.properties);
-        }
-
-        // Function to reset highlight on mouseout
-        var geojson; // Declare geojson variable in a broader scope
-
-        function resetHighlight(e) {
-            geojson.resetStyle(e.target);
-            info.update();
-        }
-
-        // Function to zoom to feature on click (optional)
-        function zoomToFeature(e) {
-            map.fitBounds(e.target.getBounds());
-        }
-
-        // Function to bind events to each feature
-        function onEachFeature(feature, layer) {
-            layer.on({
-                mouseover: highlightFeature,
-                mouseout: resetHighlight,
-                click: zoomToFeature // Optional: click to zoom
-            });
-
-            // Add a popup with Parliament name, population, and facilities
-            if (feature.properties && feature.properties.Parliament) {
-                var parliamentName = feature.properties.Parliament;
-                var population = popData[parliamentName] ? popData[parliamentName].toLocaleString() : 'N/A';
-                var facilities = facilitiesData[parliamentName];
-                let popupContent = `<b>${parliamentName}</b><br>Pop: ${population}`;
-
-                if (facilities && facilities.length > 0) {
-                    popupContent += '<br><b>Facilities:</b><ul>';
-                    facilities.forEach(facility => {
-                        popupContent += `<li>${facility}</li>`;
-                    });
-                    popupContent += '</ul>';
-                } else {
-                    popupContent += '<br>No facilities listed.';
-                }
-                layer.bindPopup(popupContent);
-            }
-        }
-
         // Add GeoJSON layer to map
-        // Ensure malaysiaGeoJson is not empty before adding
+        var geojson;
         if (malaysiaGeoJson && malaysiaGeoJson.features && malaysiaGeoJson.features.length > 0) {
             geojson = L.geoJSON(malaysiaGeoJson, {
                 style: style,
@@ -252,8 +252,6 @@
         } else {
             console.warn("No GeoJSON data found or GeoJSON is empty. Please replace 'malaysiaGeoJson' with your actual data.");
         }
-        // --- END OF GEOJSON INTEGRATION ---
-
     </script>
 </body>
 </html>
