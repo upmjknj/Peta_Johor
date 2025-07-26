@@ -394,7 +394,30 @@
             console.warn("No GeoJSON data found or GeoJSON is empty. Please replace 'malaysiaGeoJson' with your actual data.");
         }
         // --- END OF GEOJSON INTEGRATION ---
+        
+        // --- ADDED: Legend Control ---
+        var legend = L.control({position: 'bottomright'});
 
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'info legend');
+            var categories = [
+                { name: 'Hospital', color: '#e41a1c' }, // Matches hospital-marker background-color
+                { name: 'Clinic', color: '#377eb8' },   // Matches clinic-marker background-color
+                { name: 'Other Facility', color: '#4daf4a' } // Matches default-marker background-color
+            ];
+
+            // Loop through categories and add a colored square and label
+            for (var i = 0; i < categories.length; i++) {
+                div.innerHTML +=
+                    '<i style="background:' + categories[i].color + '"></i> ' +
+                    categories[i].name + '<br>';
+            }
+            return div;
+        };
+
+        legend.addTo(map);
+        // --- END ADDED Legend Control ---
+        
     </script>
 </body>
 </html>
