@@ -127,7 +127,8 @@
                 if (facilities && facilities.length > 0) {
                     let facilitiesHtml = '<div class="facility-list"><b>Facilities:</b><ul>';
                     facilities.forEach(facility => {
-                        facilitiesHtml += `<li>${facility}</li>`;
+                        // For the info box, we just display the name for now (no links)
+                        facilitiesHtml += `<li>${facility.name}</li>`;
                     });
                     facilitiesHtml += '</ul></div>';
                     content += facilitiesHtml;
