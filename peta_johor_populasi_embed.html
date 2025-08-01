@@ -185,28 +185,31 @@
         ];
         // --- END MODIFIED allMarkersData ---
 
-        // --- ADDED: Define custom Leaflet DivIcons for each category ---
-        var hospitalIcon = L.divIcon({
-            className: 'hospital-marker', // CSS class for styling
-            iconSize: [15, 15], // Size of the icon
-            iconAnchor: [7.5, 7.5], // Center the icon
-            popupAnchor: [0, -7.5] // Position popup above the center
-        });
+// --- MODIFIED: Define custom Leaflet DivIcons with embedded SVG icons ---
+var hospitalIcon = L.divIcon({
+    className: 'hospital-marker',
+    iconSize: [25, 25], // Increased size
+    iconAnchor: [12.5, 12.5], // Center the icon
+    popupAnchor: [0, -12.5], // Position popup above the center
+    html: '<svg viewBox="0 0 24 24"><path d="M19 11h-3V8h-2v3h-4V8H8v3H5v2h3v4h2v-4h4v4h2v-4h3zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>' // Simple cross icon
+});
 
-        var clinicIcon = L.divIcon({
-            className: 'clinic-marker', // CSS class for styling
-            iconSize: [15, 15],
-            iconAnchor: [7.5, 7.5],
-            popupAnchor: [0, -7.5]
-        });
+var clinicIcon = L.divIcon({
+    className: 'clinic-marker',
+    iconSize: [25, 25],
+    iconAnchor: [12.5, 12.5],
+    popupAnchor: [0, -12.5],
+    html: '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9V9h2v8zm4 0h-2V9h2v8z"/></svg>' // Simple plus sign or medical bag icon
+});
 
-        var defaultIcon = L.divIcon({
-            className: 'default-marker', // Fallback CSS class
-            iconSize: [15, 15],
-            iconAnchor: [7.5, 7.5],
-            popupAnchor: [0, -7.5]
-        });
-        // --- END ADDED DivIcons ---
+var defaultIcon = L.divIcon({
+    className: 'default-marker',
+    iconSize: [25, 25],
+    iconAnchor: [12.5, 12.5],
+    popupAnchor: [0, -12.5],
+    html: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg>' // Simple circle
+});
+// --- END MODIFIED DivIcons ---
         
         var map = L.map('map').setView([2.5, 103], 8);
 
@@ -396,14 +399,14 @@
         // --- END OF GEOJSON INTEGRATION ---
         
         // --- ADDED: Legend Control ---
-        var legend = L.control({position: 'bottomright'});
+       var legend = L.control({position: 'bottomright'});
 
         legend.onAdd = function (map) {
             var div = L.DomUtil.create('div', 'info legend');
             var categories = [
-                { name: 'Hospital', color: '#e41a1c' }, // Matches hospital-marker background-color
-                { name: 'Clinic', color: '#377eb8' },   // Matches clinic-marker background-color
-                { name: 'Other Facility', color: '#4daf4a' } // Matches default-marker background-color
+                { name: 'Hospital', color: '#e41a1c' }, // Matches hospital-marker background
+                { name: 'Clinic', color: '#377eb8' },   // Matches clinic-marker background
+                { name: 'Other Facility', color: '#4daf4a' } // Matches default-marker background
             ];
 
             // Loop through categories and add a colored square and label
@@ -416,6 +419,8 @@
         };
 
         legend.addTo(map);
+        // --- END ADDED Legend Control ---
+
         // --- END ADDED Legend Control ---
         
     </script>
