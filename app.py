@@ -8,7 +8,7 @@ app = Flask(__name__)
 # Define the path to your CSV file
 # This ensures that the Flask app can find your CSV file no matter where you run the script from.
 # It joins the directory of the current file (app.py) with the name of your CSV file.
-CSV_FILE_PATH = os.path.join(os.path.dirname(__file__), 'Data Perjawatan JKN Johor -01.07.2025.xlsx - Table 1.csv')
+CSV_FILE_PATH = os.path.join(os.path.dirname(__file__), 'Data Perjawatan JKN Johor.csv') 
 
 def get_marker_data():
     """
@@ -63,8 +63,8 @@ def get_marker_data():
             # You MUST replace these dummy values with actual geographic coordinates
             # for each location.
             # For demonstration, these values just create a slightly offset position for each marker.
-            lat = 1.9 + (index * 0.001) # Dummy latitude, please replace with actual data
-            lng = 103.3 + (index * 0.001) # Dummy longitude, please replace with actual data
+            lat = 1.4 + (index * 0.001) # Dummy latitude, please replace with actual data
+            lng = 103.7 + (index * 0.001) # Dummy longitude, please replace with actual data
 
             # Basic description and category assignment based on location name
             description = f"Data for {location_name}"
