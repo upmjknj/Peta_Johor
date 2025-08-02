@@ -65,8 +65,8 @@ def get_marker_data():
             # You MUST replace these dummy values with actual geographic coordinates
             # for each location.
             # For demonstration, these values just create a slightly offset position for each marker.
-            lat = 1.4 + (index * 0.001) # Dummy latitude, please replace with actual data
-            lng = 103.7 + (index * 0.001) # Dummy longitude, please replace with actual data
+            lat = 1.45875360613748 + (index * 0.001) # Dummy latitude, please replace with actual data
+            lng = 103.746098573414 + (index * 0.001) # Dummy longitude, please replace with actual data
 
             # Basic description and category assignment based on location name
             description = f"Data for {location_name}"
