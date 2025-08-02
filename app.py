@@ -8,7 +8,7 @@ app = Flask(__name__)
 # Define the path to your CSV file
 # This ensures that the Flask app can find your CSV file no matter where you run the script from.
 # It joins the directory of the current file (app.py) with the name of your CSV file.
-CSV_FILE_PATH = os.path.join(os.path.dirname(__file__), 'Data Perjawatan JKN Johor.csv')
+CSV_FILE_PATH = os.path.join(os.path.dirname(Peta_Johor), 'Data Perjawatan JKN Johor.csv')
 
 def get_marker_data():
     """
