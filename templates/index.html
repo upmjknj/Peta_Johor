@@ -308,7 +308,10 @@ var defaultIcon = L.divIcon({
     async function initMap() {
     try {
         const response = await fetch('/api/markers');
-        // ... rest of your code
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const allMarkersData = await response.json();
     } catch (error) {
         console.error("Error fetching marker data:", error);
     }
