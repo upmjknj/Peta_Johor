@@ -303,13 +303,19 @@ var defaultIcon = L.divIcon({
             }
         }
 
-        // Fetch marker data from your Flask API
-            try {
-                const response = await fetch('/api/markers'); // This calls your Flask endpoint
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const allMarkersData = await response.json(); // Get the JSON data
+     
+// Correct - 'await' is inside an 'async' function
+    async function initMap() {
+    try {
+        const response = await fetch('/api/markers');
+        // ... rest of your code
+    } catch (error) {
+        console.error("Error fetching marker data:", error);
+    }
+}
+
+// Call the async function to initialize the map and load data
+document.addEventListener('DOMContentLoaded', initMap);
         
         // *** NEW: Loop through the allMarkersData and add markers to the map ONCE ***
         // This loop should be outside onEachFeature    
