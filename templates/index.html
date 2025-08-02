@@ -148,42 +148,26 @@
         // This new data structure is for individual facilities you want to mark on the map
         // Each object must have lat and lng
         // --- MODIFIED: allMarkersData with 'category' property added to each object ---
-        var allMarkersData = [
-            {
-                name: "HOSPITAL SULTANAH AMINAH JOHOR BAHRU",
-                lat: 1.4593303508060065,
-                lng: 103.74438934039425,
-                JS: "<b>Jawatan Sebenar (Tetap)</b>",
-                url: "pages/sultanah_aminah_hospital.html",
-                description: "Major public hospital in Johor Bahru.",
-                category: "Hospital" // Added category
-            },
-            {
-                name: "Klinik Kesihatan Larkin",
-                lat: 1.4969741622768677, // Example coordinates for a clinic
-                lng: 103.74894093420767, 
-                url: "pages/kk_larkin.html",
-                description: "Public health clinic in Larkin.",
-                category: "Clinic" // Added category
-            },
-            {
-                name: "Hospital Permai",
-                lat: 1.5237254480284828,
-                lng: 103.70468321552346,
-                url: "pages/hospital_permai.html",
-                description: "Psychiatric hospital in Johor Bahru.",
-                category: "Hospital"
-            },
-            {
-                name: "Klinik Desa Kempas",
-                lat: 1.5327818222951763, 
-                lng: 103.71478819997843,
-                url: "pages/kd_kempas.html",
-                description: "Rural health clinic in Kempas.",
-                category: "Clinic"
-            }
-            // Add more facilities with their respective categories and coordinates
-        ];
+        allMarkersData.forEach(markerData => {
+            var marker = L.marker([markerData.lat, markerData.lng]).addTo(map);
+
+            // Create popup content with J, I, K values
+            var popupContent = `<b>${markerData.name}</b><br>${markerData.description}`;
+                if (markerData.JS && markerData.J !== undefined) {
+                    popupContent += `<br><b>${markerData.JS}</b>: ${markerData.J}`;
+                }
+                if (markerData.I !== undefined) {
+                    popupContent += `<br><b>J</b>: ${markerData.I}`;
+                }
+                if (markerData.K !== undefined) {
+                    popupContent += `<br><b>I</b>: ${markerData.K}`;
+                }
+
+                if (markerData.url && markerData.url !== '#') { // Check for valid URL
+                    popupContent += `<br><a href=\"${markerData.url}\" target=\"_blank\">View Details</a>`;
+                }
+                marker.bindPopup(popupContent);
+                });
         // --- END MODIFIED allMarkersData ---
 
 // --- MODIFIED: Define custom Leaflet DivIcons with embedded SVG icons ---
