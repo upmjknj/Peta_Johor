@@ -339,34 +339,54 @@ var defaultIcon = L.divIcon({
         // *** NEW: Loop through the allMarkersData and add markers to the map ONCE ***
         // This loop should be outside onEachFeature    
         // --- MODIFIED: Loop through allMarkersData and add markers with category-specific icons ---
+            allMarkersData.forEach(markerData => {
+                var marker = L.marker([markerData.lat, markerData.lng]).addTo(map);
+
+                var popupContent = `<b>${markerData.name}</b><br>${markerData.description}`;
+                if (markerData.JS && markerData.J !== undefined) {
+                    popupContent += `<br><b>${markerData.JS}</b>: ${markerData.J}`;
+                }
+                if (markerData.I !== undefined) {
+                    popupContent += `<br><b>J</b>: ${markerData.I}`;
+                }
+                if (markerData.K !== undefined) {
+                    popupContent += `<br><b>I</b>: ${markerData.K}`;
+                }
+                if (markerData.url && markerData.url !== '#') {
+                    popupContent += `<br><a href=\"${markerData.url}\" target=\"_blank\">View Details</a>`;
+                }
+                marker.bindPopup(popupContent);
+            });            
+        
+        
         allMarkersData.forEach(function(facility) {
-            let currentIcon;
-            switch (facility.category) {
-                case "Hospital":
-                    currentIcon = hospitalIcon;
-                    break;
-                case "Clinic":
-                    currentIcon = clinicIcon;
-                    break;
-                default:
-                    currentIcon = defaultIcon; // Fallback for uncategorized facilities
-            }
+                let currentIcon;
+                switch (facility.category) {
+                    case "Hospital":
+                        currentIcon = hospitalIcon;
+                        break;
+                    case "Clinic":
+                        currentIcon = clinicIcon;
+                        break;
+                    default:
+                        currentIcon = defaultIcon;
+                }
 
-            var marker = L.marker([facility.lat, facility.lng], { icon: currentIcon }).addTo(map);
+                var marker = L.marker([facility.lat, facility.lng], { icon: currentIcon }).addTo(map);
 
-            // Create popup content for the marker
-            let markerPopupContent = `<b>${facility.name}</b><br>`;
-            if (facility.description) {
-                markerPopupContent += `${facility.description}<br>`;
-            }
-            if (facility.url) {
-                markerPopupContent += `<a href="${facility.url}">More Info</a>`;
-            }
-            if (facility.category) { // Display category in popup
-                markerPopupContent += `<br>Category: ${facility.category}`;
-            }
-            marker.bindPopup(markerPopupContent);
-        });
+                let markerPopupContent = `<b>${facility.name}</b><br>`;
+                if (facility.description) {
+                    markerPopupContent += `${facility.description}<br>`;
+                }
+                if (facility.url) {
+                    markerPopupContent += `<a href="${facility.url}">More Info</a>`;
+                }
+                if (facility.category) {
+                    markerPopupContent += `<br>Category: ${facility.category}`;
+                }
+
+                marker.bindPopup(markerPopupContent);
+            });
         
         } catch (error) {
             console.error("Error fetching marker data:", error);
