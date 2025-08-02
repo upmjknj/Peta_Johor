@@ -148,71 +148,33 @@
         // This new data structure is for individual facilities you want to mark on the map
         // Each object must have lat and lng
         // --- MODIFIED: allMarkersData with 'category' property added to each object ---
-        var allMarkersData = [
-            {
-                    "name": location_name,
-                    "lat": row[lat_col],
-                    "lng": row[lng_col],
-                    "url": url,
-                    "description": description,
-                    "category": category,
-                    "J": row[j_col],
-                    "I": row[i_col],
-                    "K": row[k_col]
-            },
-            {
-                name: "Klinik Kesihatan Larkin",
-                lat: 1.4969741622768677, // Example coordinates for a clinic
-                lng: 103.74894093420767, 
-                url: "pages/kk_larkin.html",
-                description: "Public health clinic in Larkin.",
-                category: "Clinic" // Added category
-            },
-            {
-                name: "Hospital Permai",
-                lat: 1.5237254480284828,
-                lng: 103.70468321552346,
-                url: "pages/hospital_permai.html",
-                description: "Psychiatric hospital in Johor Bahru.",
-                category: "Hospital"
-            },
-            {
-                name: "Klinik Desa Kempas",
-                lat: 1.5327818222951763, 
-                lng: 103.71478819997843,
-                url: "pages/kd_kempas.html",
-                description: "Rural health clinic in Kempas.",
-                category: "Clinic"
-            }
-            // Add more facilities with their respective categories and coordinates
-        ];
-        // --- END MODIFIED allMarkersData ---
+        // The allMarkersData variable should be defined and populated by the fetch request
+        var allMarkersData = [];
 
-// --- MODIFIED: Define custom Leaflet DivIcons with embedded SVG icons ---
-var hospitalIcon = L.divIcon({
-    className: 'hospital-marker',
-    iconSize: [25, 25], // Increased size
-    iconAnchor: [12.5, 12.5], // Center the icon
-    popupAnchor: [0, -12.5], // Position popup above the center
-    html: '<svg viewBox="0 0 24 24"><path d="M19 11h-3V8h-2v3h-4V8H8v3H5v2h3v4h2v-4h4v4h2v-4h3zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>' // Simple cross icon
-});
+        // Define custom Leaflet DivIcons with embedded SVG icons
+        var hospitalIcon = L.divIcon({
+            className: 'hospital-marker',
+            iconSize: [25, 25],
+            iconAnchor: [12.5, 12.5],
+            popupAnchor: [0, -12.5],
+            html: '<svg viewBox="0 0 24 24"><path d="M19 11h-3V8h-2v3h-4V8H8v3H5v2h3v4h2v-4h4v4h2v-4h3zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>'
+        });
 
-var clinicIcon = L.divIcon({
-    className: 'clinic-marker',
-    iconSize: [25, 25],
-    iconAnchor: [12.5, 12.5],
-    popupAnchor: [0, -12.5],
-    html: '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9V9h2v8zm4 0h-2V9h2v8z"/></svg>' // Simple plus sign or medical bag icon
-});
+        var clinicIcon = L.divIcon({
+            className: 'clinic-marker',
+            iconSize: [25, 25],
+            iconAnchor: [12.5, 12.5],
+            popupAnchor: [0, -12.5],
+            html: '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9V9h2v8zm4 0h-2V9h2v8z"/></svg>'
+        });
 
-var defaultIcon = L.divIcon({
-    className: 'default-marker',
-    iconSize: [25, 25],
-    iconAnchor: [12.5, 12.5],
-    popupAnchor: [0, -12.5],
-    html: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg>' // Simple circle
-});
-// --- END MODIFIED DivIcons ---
+        var defaultIcon = L.divIcon({
+            className: 'default-marker',
+            iconSize: [25, 25],
+            iconAnchor: [12.5, 12.5],
+            popupAnchor: [0, -12.5],
+            html: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg>'
+        });
         
         var map = L.map('map').setView([2.5, 103], 8);
 
@@ -220,7 +182,6 @@ var defaultIcon = L.divIcon({
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // Custom control for info box
         var info = L.control();
 
         info.onAdd = function (map) {
@@ -234,15 +195,11 @@ var defaultIcon = L.divIcon({
             if (props && props.Parliament) {
                 const parliamentName = props.Parliament;
                 const population = popData[parliamentName] ? popData[parliamentName].toLocaleString() : 'N/A';
-                // *** CORRECTED: Use facilitiesData here ***
                 const facilities = facilitiesData[parliamentName];
-
                 content = `<b>${parliamentName}</b><br>Pop: ${population}`;
-
                 if (facilities && facilities.length > 0) {
                     let facilitiesHtml = '<div class="facility-list"><b>Facilities:</b><ul>';
                     facilities.forEach(facility => {
-                        // For the info box, we just display the name for now (no links)
                         facilitiesHtml += `<li>${facility.name}</li>`;
                     });
                     facilitiesHtml += '</ul></div>';
@@ -256,10 +213,9 @@ var defaultIcon = L.divIcon({
 
         info.addTo(map);
 
-        // Function to define initial style for GeoJSON polygons
         function style(feature) {
             return {
-                fillColor: '#800026', // Initial fill color (dark red)
+                fillColor: '#800026',
                 weight: 2,
                 opacity: 1,
                 color: 'white',
@@ -268,19 +224,17 @@ var defaultIcon = L.divIcon({
             };
         }
 
-        // Function to handle feature events (e.g., hover)
         function onEachFeature(feature, layer) {
             layer.on({
                 mouseover: function(e) {
                     var layer = e.target;
                     layer.setStyle({
-                        fillColor: '#5C71FF', // New fill color on hover (light blue)
-                        weight: 4, // Thicker border on hover
+                        fillColor: '#5C71FF',
+                        weight: 4,
                         color: '#666',
                         dashArray: '',
                         fillOpacity: 0.9
                     });
-
                     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
                         layer.bringToFront();
                     }
@@ -288,25 +242,20 @@ var defaultIcon = L.divIcon({
                 },
                 mouseout: function(e) {
                     geojson.resetStyle(e.target);
-                    info.update(); // Clear info box on mouse out
+                    info.update();
                 },
                 click: function(e) {
                     map.fitBounds(e.target.getBounds());
                 }
             });
-
-            // Bind popup with detailed information for the parliamentary area
             if (feature.properties && feature.properties.Parliament) {
                 var parliamentName = feature.properties.Parliament;
                 var population = popData[parliamentName] ? popData[parliamentName].toLocaleString() : 'N/A';
-                // *** CORRECTED: Use facilitiesData here ***
                 var facilities = facilitiesData[parliamentName];
                 let popupContent = `<b>${parliamentName}</b><br>Pop: ${population}`;
-
                 if (facilities && facilities.length > 0) {
                     popupContent += '<br><b>Facilities:</b><ul>';
                     facilities.forEach(facility => {
-                        // Conditionally create anchor tag based on 'url' property
                         if (facility.url) {
                             popupContent += `<li><a href="${facility.url}">${facility.name}</a></li>`;
                         } else {
@@ -320,39 +269,65 @@ var defaultIcon = L.divIcon({
                 layer.bindPopup(popupContent);
             }
         }
+        
+        // This is the correct asynchronous function to fetch the data
+        async function initMap() {
+            try {
+                const response = await fetch('/api/markers');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const allMarkersData = await response.json();
 
-        // *** NEW: Loop through the allMarkersData and add markers to the map ONCE ***
-        // This loop should be outside onEachFeature
-        // --- MODIFIED: Loop through allMarkersData and add markers with category-specific icons ---
-        allMarkersData.forEach(function(facility) {
-            let currentIcon;
-            switch (facility.category) {
-                case "Hospital":
-                    currentIcon = hospitalIcon;
-                    break;
-                case "Clinic":
-                    currentIcon = clinicIcon;
-                    break;
-                default:
-                    currentIcon = defaultIcon; // Fallback for uncategorized facilities
-            }
+                // Loop through the fetched data and create markers
+                allMarkersData.forEach(function(facility) {
+                    let currentIcon;
+                    switch (facility.category) {
+                        case "Hospital":
+                            currentIcon = hospitalIcon;
+                            break;
+                        case "Clinic":
+                            currentIcon = clinicIcon;
+                            break;
+                        default:
+                            currentIcon = defaultIcon;
+                    }
 
-            var marker = L.marker([facility.lat, facility.lng], { icon: currentIcon }).addTo(map);
+                    var marker = L.marker([facility.lat, facility.lng], { icon: currentIcon }).addTo(map);
 
-            // Create popup content for the marker
-            let markerPopupContent = `<b>${facility.name}</b><br>`;
-            if (facility.description) {
-                markerPopupContent += `${facility.description}<br>`;
-            }
-            if (facility.url) {
-                markerPopupContent += `<a href="${facility.url}">More Info</a>`;
-            }
-            if (facility.category) { // Display category in popup
-                markerPopupContent += `<br>Category: ${facility.category}`;
-            }
+                    let markerPopupContent = `<b>${facility.name}</b><br>`;
+                    if (facility.description) {
+                        markerPopupContent += `${facility.description}<br>`;
+                    }
+                    if (facility.url) {
+                        markerPopupContent += `<a href="${facility.url}">More Info</a>`;
+                    }
+                    if (facility.category) {
+                        markerPopupContent += `<br>Category: ${facility.category}`;
+                    }
 
-            marker.bindPopup(markerPopupContent);
-        });
+                    // Check for J, I, and K properties before adding them
+                    if (facility.J !== undefined && facility.J !== null) {
+                        markerPopupContent += `<br>J: ${facility.J}`;
+                    }
+                    if (facility.I !== undefined && facility.I !== null) {
+                        markerPopupContent += `<br>I: ${facility.I}`;
+                    }
+                    if (facility.K !== undefined && facility.K !== null) {
+                        markerPopupContent += `<br>K: ${facility.K}`;
+                    }
+
+                    marker.bindPopup(markerPopupContent);
+                });
+
+            } catch (error) {
+                console.error("Error fetching marker data:", error);
+            }
+        }
+
+        // --- CORRECTED CODE ENDS HERE ---
+
+        document.addEventListener('DOMContentLoaded', initMap);
         // --- END MODIFIED marker loop ---
 
 
