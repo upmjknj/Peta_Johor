@@ -8,7 +8,7 @@ app = Flask(__name__)
 # Define the path to your CSV file
 # This ensures that the Flask app can find your CSV file no matter where you run the script from.
 # It joins the directory of the current file (app.py) with the name of your CSV file.
-CSV_FILE_PATH = os.path.join(os.path.dirname(__file__), 'Data Perjawatan JKN Johor.csv') 
+CSV_FILE_PATH = os.path.join(os.path.dirname(Peta_Johor), 'Data Perjawatan JKN Johor.csv')
 
 def get_marker_data():
     """
@@ -54,19 +54,17 @@ def get_marker_data():
             # - `K` value: corresponds to the 'I' column (unnamed) which is column 5 (index 5) 
             # `pd.to_numeric` converts values to numbers, and `errors='coerce'` turns non-numeric into NaN.
             # `fillna(0)` then replaces any NaN values with 0.
-            lat_val = row.iloc[2] # Now correct for Lat if inserted at index 2
-            lng_val = row.iloc[3] # Now correct for Lng if inserted at index 3
-            j_val = pd.to_numeric(row.iloc[4], errors='coerce').fillna(0) # Corrected index for 'Jawatan Sebenar (Tetap)'
-            i_val = pd.to_numeric(row.iloc[6], errors='coerce').fillna(0) # Corrected index for 'J'
-            k_val = pd.to_numeric(row.iloc[7], errors='coerce').fillna(0) # Corrected index for 'I'
+            j_val = pd.to_numeric(row.iloc[3], errors='coerce').fillna(0)
+            i_val = pd.to_numeric(row.iloc[4], errors='coerce').fillna(0)
+            k_val = pd.to_numeric(row.iloc[5], errors='coerce').fillna(0)
 
             # --- IMPORTANT: Placeholder for Latitude and Longitude (lat, lng) ---
             # Your CSV file does NOT contain latitude and longitude data. 
             # You MUST replace these dummy values with actual geographic coordinates
             # for each location.
             # For demonstration, these values just create a slightly offset position for each marker.
-            lat = 1.45875360613748 + (index * 0.001) # Dummy latitude, please replace with actual data
-            lng = 103.746098573414 + (index * 0.001) # Dummy longitude, please replace with actual data
+            lat = 1.4 + (index * 0.001) # Dummy latitude, please replace with actual data
+            lng = 103.7 + (index * 0.001) # Dummy longitude, please replace with actual data
 
             # Basic description and category assignment based on location name
             description = f"Data for {location_name}"
