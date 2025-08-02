@@ -148,7 +148,6 @@
         // This new data structure is for individual facilities you want to mark on the map
         // Each object must have lat and lng
         // --- MODIFIED: allMarkersData with 'category' property added to each object ---
-        // --- MODIFIED: allMarkersData with 'category' property added to each object ---
         var allMarkersData = [
             {
                 name: "Sultanah Aminah Hospital",
@@ -184,7 +183,6 @@
             }
             // Add more facilities with their respective categories and coordinates
         ];
-        // --- END MODIFIED allMarkersData ---
         // --- END MODIFIED allMarkersData ---
 
 // --- MODIFIED: Define custom Leaflet DivIcons with embedded SVG icons ---
@@ -319,100 +317,42 @@ var defaultIcon = L.divIcon({
                 layer.bindPopup(popupContent);
             }
         }
-        
-        var hospitalIcon = L.divIcon({
-            className: 'hospital-marker',
-            iconSize: [25, 25],
-            iconAnchor: [12.5, 12.5],
-            popupAnchor: [0, -12.5],
-            html: '<svg viewBox="0 0 24 24"><path d="M19 11h-3V8h-2v3h-4V8H8v3H5v2h3v4h2v-4h4v4h2v-4h3zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>'
-        });
-        
-        var clinicIcon = L.divIcon({
-            className: 'clinic-marker',
-            iconSize: [25, 25],
-            iconAnchor: [12.5, 12.5],
-            popupAnchor: [0, -12.5],
-            html: '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9V9h2v8zm4 0h-2V9h2v8z"/></svg>'
-        });
-        
-        var defaultIcon = L.divIcon({
-            className: 'default-marker',
-            iconSize: [25, 25],
-            iconAnchor: [12.5, 12.5],
-            popupAnchor: [0, -12.5],
-            html: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg>'
-        });
-        
-// Correct - 'await' is inside an 'async' function
-    async function initMap() {
-    try {
-        const response = await fetch('/api/markers');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const allMarkersData = await response.json();
-               
+
         // *** NEW: Loop through the allMarkersData and add markers to the map ONCE ***
-        // This loop should be outside onEachFeature    
+        // This loop should be outside onEachFeature
         // --- MODIFIED: Loop through allMarkersData and add markers with category-specific icons ---
-            allMarkersData.forEach(markerData => {
-                var marker = L.marker([markerData.lat, markerData.lng]).addTo(map);
-
-                var popupContent = `<b>${markerData.name}</b><br>${markerData.description}`;
-                if (markerData.JS && markerData.J !== undefined) {
-                    popupContent += `<br><b>${markerData.JS}</b>: ${markerData.J}`;
-                }
-                if (markerData.I !== undefined) {
-                    popupContent += `<br><b>J</b>: ${markerData.I}`;
-                }
-                if (markerData.K !== undefined) {
-                    popupContent += `<br><b>I</b>: ${markerData.K}`;
-                }
-                if (markerData.url && markerData.url !== '#') {
-                    popupContent += `<br><a href=\"${markerData.url}\" target=\"_blank\">View Details</a>`;
-                }
-                marker.bindPopup(popupContent);
-            });            
-        
-        
         allMarkersData.forEach(function(facility) {
-                let currentIcon;
-                switch (facility.category) {
-                    case "Hospital":
-                        currentIcon = hospitalIcon;
-                        break;
-                    case "Clinic":
-                        currentIcon = clinicIcon;
-                        break;
-                    default:
-                        currentIcon = defaultIcon;
-                }
+            let currentIcon;
+            switch (facility.category) {
+                case "Hospital":
+                    currentIcon = hospitalIcon;
+                    break;
+                case "Clinic":
+                    currentIcon = clinicIcon;
+                    break;
+                default:
+                    currentIcon = defaultIcon; // Fallback for uncategorized facilities
+            }
 
-                var marker = L.marker([facility.lat, facility.lng], { icon: currentIcon }).addTo(map);
+            var marker = L.marker([facility.lat, facility.lng], { icon: currentIcon }).addTo(map);
 
-                let markerPopupContent = `<b>${facility.name}</b><br>`;
-                if (facility.description) {
-                    markerPopupContent += `${facility.description}<br>`;
-                }
-                if (facility.url) {
-                    markerPopupContent += `<a href="${facility.url}">More Info</a>`;
-                }
-                if (facility.category) {
-                    markerPopupContent += `<br>Category: ${facility.category}`;
-                }
+            // Create popup content for the marker
+            let markerPopupContent = `<b>${facility.name}</b><br>`;
+            if (facility.description) {
+                markerPopupContent += `${facility.description}<br>`;
+            }
+            if (facility.url) {
+                markerPopupContent += `<a href="${facility.url}">More Info</a>`;
+            }
+            if (facility.category) { // Display category in popup
+                markerPopupContent += `<br>Category: ${facility.category}`;
+            }
 
-                marker.bindPopup(markerPopupContent);
-            });
-        
-        } catch (error) {
-            console.error("Error fetching marker data:", error);
-        }
-    }
-        
+            marker.bindPopup(markerPopupContent);
+        });
         // --- END MODIFIED marker loop ---
 
-    document.addEventListener('DOMContentLoaded', initMap);
+
 
         var malaysiaGeoJson = {
             "type": "FeatureCollection",
@@ -448,20 +388,14 @@ var defaultIcon = L.divIcon({
 
         // Add GeoJSON layer to map
         // Ensure malaysiaGeoJson is not empty before adding
-        //if (malaysiaGeoJson && malaysiaGeoJson.features && malaysiaGeoJson.features.length > 0) {
-            var geojson = L.geoJSON(malaysiaGeoJson, {
+        if (malaysiaGeoJson && malaysiaGeoJson.features && malaysiaGeoJson.features.length > 0) {
+            geojson = L.geoJSON(malaysiaGeoJson, {
                 style: style,
                 onEachFeature: onEachFeature
             }).addTo(map);
-
-        function updateBounds() {
-            if (geojson) {
-                var bounds = geojson.getBounds();
-                map.fitBounds(bounds);
-            }
-        }        
-        updateBounds();
-        
+        } else {
+            console.warn("No GeoJSON data found or GeoJSON is empty. Please replace 'malaysiaGeoJson' with your actual data.");
+        }
         // --- END OF GEOJSON INTEGRATION ---
         
         // --- ADDED: Legend Control ---
@@ -487,9 +421,8 @@ var defaultIcon = L.divIcon({
         legend.addTo(map);
         // --- END ADDED Legend Control ---
 
-
-
-                
+        // --- END ADDED Legend Control ---
+        
     </script>
 </body>
 </html>
