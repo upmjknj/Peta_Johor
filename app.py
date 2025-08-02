@@ -57,8 +57,8 @@ def get_marker_data():
             lat_val = row.iloc[2] # Now correct for Lat if inserted at index 2
             lng_val = row.iloc[3] # Now correct for Lng if inserted at index 3
             j_val = pd.to_numeric(row.iloc[4], errors='coerce').fillna(0)
-            i_val = pd.to_numeric(row.iloc[6], errors='coerce').fillna(0)
-            k_val = pd.to_numeric(row.iloc[7], errors='coerce').fillna(0)
+            i_val = pd.to_numeric(row.iloc[5], errors='coerce').fillna(0)
+            k_val = pd.to_numeric(row.iloc[6], errors='coerce').fillna(0)
 
             # --- IMPORTANT: Placeholder for Latitude and Longitude (lat, lng) ---
             # Your CSV file does NOT contain latitude and longitude data. 
