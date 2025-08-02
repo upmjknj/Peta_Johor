@@ -322,8 +322,16 @@ var defaultIcon = L.divIcon({
             }
         }
 
+        // Fetch marker data from your Flask API
+            try {
+                const response = await fetch('/api/markers'); // This calls your Flask endpoint
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const allMarkersData = await response.json(); // Get the JSON data
+        
         // *** NEW: Loop through the allMarkersData and add markers to the map ONCE ***
-        // This loop should be outside onEachFeature
+        // This loop should be outside onEachFeature    
         // --- MODIFIED: Loop through allMarkersData and add markers with category-specific icons ---
         allMarkersData.forEach(function(facility) {
             let currentIcon;
@@ -425,8 +433,38 @@ var defaultIcon = L.divIcon({
         legend.addTo(map);
         // --- END ADDED Legend Control ---
 
-        // --- END ADDED Legend Control ---
-        
+                // Add markers to the map using the fetched data
+                allMarkersData.forEach(function(markerData) {
+                    var marker = L.marker([markerData.lat, markerData.lng]).addTo(map);
+                    
+                    // Create popup content with J, I, K values
+                    var popupContent = `<b>${markerData.name}</b><br>${markerData.description}`;
+                    if (markerData.JS && markerData.J !== undefined) {
+                        popupContent += `<br><b>${markerData.JS}</b>: ${markerData.J}`;
+                    }
+                    if (markerData.I !== undefined) {
+                        popupContent += `<br><b>J</b>: ${markerData.I}`; // Assuming 'J' is the label for the 'I' column from CSV
+                    }
+                    if (markerData.K !== undefined) {
+                        popupContent += `<br><b>I</b>: ${markerData.K}`; // Assuming 'I' is the label for the 'K' column from CSV
+                    }
+
+                    if (markerData.url && markerData.url !== '#') { // Check for valid URL
+                        popupContent += `<br><a href="${markerData.url}" target="_blank">View Details</a>`;
+                    }
+                    marker.bindPopup(popupContent);
+                });
+
+            } catch (error) {
+                console.error("Error fetching marker data:", error);
+                // Optionally display an error message on the map or page
+            }
+        }
+
+        // Call the async function to initialize the map and load data
+        document.addEventListener('DOMContentLoaded', initMap);
+
+                
     </script>
 </body>
 </html>
