@@ -346,6 +346,10 @@ var defaultIcon = L.divIcon({
             if (facility.url) {
                 markerPopupContent += `<a href="${facility.url}">More Info</a>`;
             }
+
+            if (facility["Jawatan Sebenar"]) {
+                markerPopupContent += `<br><strong>Jawatan Sebenar:</strong> ${facility["Jawatan Sebenar"]}`;
+            }            
             if (facility.category) { // Display category in popup
                 markerPopupContent += `<br>Category: ${facility.category}`;
             }
